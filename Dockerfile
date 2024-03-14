@@ -82,7 +82,7 @@ COPY install/buildenv.sh /app/
 
 VOLUME ["/var/spool/postfix"]
 
-EXPOSE 25
+EXPOSE 25 587 465 2525
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["start"]
