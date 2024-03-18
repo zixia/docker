@@ -11,6 +11,9 @@ RUN apk add --update --no-cache \
         coreutils \
         curl \
         cyrus-sasl \
+        cyrus-sasl-crammd5 \
+        cyrus-sasl-digestmd5 \
+        cyrus-sasl-ntlm \
         cyrus-sasl-login \
         ca-certificates \
         drill \
@@ -42,11 +45,11 @@ COPY install/master.dist.cf /etc/postfix/master.cf
 COPY install/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY install/opendkim.conf /etc/opendkim/opendkim.conf
 COPY install/sender_header_filter.pcre /etc/postfix/sender_header_filter.pcre
+COPY install/sasl_smtpd.conf /etc/sasl2/smtpd.conf
 RUN cat /dev/null > /etc/postfix/aliases && newaliases \
     && echo simple-mail-forwarder.com > /etc/hostname \
     && mkdir -p /run/opendkim && chown opendkim:opendkim /run/opendkim \
-    && mkdir -p /etc/sasl2/ \
-    && echo test | saslpasswd2 -f /etc/sasl2/sasldb2 -p test@test.com \
+    && echo test | saslpasswd2 -p -c -u "test.com" "test" \
     && chown postfix /etc/sasl2/sasldb2 \
     && saslpasswd2 -d test@test.com
 

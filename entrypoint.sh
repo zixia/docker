@@ -100,7 +100,7 @@ function start_postfix {
         password=$tryPassword
 
         echo ">> Setting password[$password] for user $emailFrom ..."
-        echo $password | saslpasswd2 $emailFrom
+        echo $password | saslpasswd2 -p $emailFrom
 
         newLine=$(printf '%s\t%s' $emailFrom "$emailTo")
         virtualUsers="${virtualUsers}${newLine}${NEWLINE}"
