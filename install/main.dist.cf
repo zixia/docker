@@ -278,7 +278,7 @@ unknown_local_recipient_reject_code = 550
 #
 #mynetworks = 168.100.189.0/28, 127.0.0.0/8
 #mynetworks = $config_directory/mynetworks
-#mynetworks = hash:/etc/postfix/network_table
+#mynetworks = lmdb:/etc/postfix/network_table
 
 # The relay_domains parameter restricts what destinations this system will
 # relay mail to.  See the smtpd_recipient_restrictions description in
@@ -343,7 +343,7 @@ unknown_local_recipient_reject_code = 550
 # In the left-hand side, specify an @domain.tld wild-card, or specify
 # a user@domain.tld address.
 #
-#relay_recipient_maps = hash:/etc/postfix/relay_recipients
+#relay_recipient_maps = lmdb:/etc/postfix/relay_recipients
 
 # INPUT RATE CONTROL
 #
@@ -398,8 +398,8 @@ unknown_local_recipient_reject_code = 550
 # "postfix reload" to eliminate the delay.
 #
 #alias_maps = dbm:/etc/aliases
-#alias_maps = hash:/etc/aliases
-#alias_maps = hash:/etc/aliases, nis:mail.aliases
+#alias_maps = lmdb:/etc/aliases
+#alias_maps = lmdb:/etc/aliases, nis:mail.aliases
 #alias_maps = netinfo:/aliases
 
 # The alias_database parameter specifies the alias database(s) that
@@ -409,8 +409,8 @@ unknown_local_recipient_reject_code = 550
 #
 #alias_database = dbm:/etc/aliases
 #alias_database = dbm:/etc/mail/aliases
-#alias_database = hash:/etc/aliases
-#alias_database = hash:/etc/aliases, hash:/opt/majordomo/aliases
+#alias_database = lmdb:/etc/aliases
+#alias_database = lmdb:/etc/aliases, lmdb:/opt/majordomo/aliases
 
 # ADDRESS EXTENSIONS (e.g., user+foo)
 #
@@ -681,7 +681,7 @@ mail_spool_directory = /var/spool/mail/
 mailbox_command =
 smtputf8_enable = no
 virtual_alias_domains = test.com
-virtual_alias_maps = hash:/etc/postfix/virtual
+virtual_alias_maps = lmdb:/etc/postfix/virtual
 myhostname = test.com
 mydestination = localhost
 

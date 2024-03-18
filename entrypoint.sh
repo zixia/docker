@@ -123,7 +123,7 @@ function start_postfix {
 
     # issue #1: postconf -e virtual_alias_domains="$virtualDomains"
     postconf -e relay_domains="$virtualDomains"
-    postconf -e virtual_alias_maps="hash:/etc/postfix/virtual"
+    postconf -e virtual_alias_maps="lmdb:/etc/postfix/virtual"
 
     # initial user database
     postmap /etc/postfix/virtual
@@ -195,7 +195,7 @@ function start_postfix {
         postconf -e smtp_use_tls=yes
         postconf -e smtp_sasl_auth_enable=yes
         postconf -e smtp_sasl_security_options=
-        postconf -e smtp_sasl_password_maps=hash:/etc/postfix/sasl_passwd
+        postconf -e smtp_sasl_password_maps=lmdb:/etc/postfix/sasl_passwd
         postconf -e smtp_tls_CAfile=/etc/ssl/certs/ca-certificates.crt
     fi
 
