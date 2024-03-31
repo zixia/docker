@@ -121,12 +121,20 @@ function start_postfix {
 
     echo "$virtualUsers"  > /etc/postfix/virtual
 
+    # disable postfix compatibility mode
+    postconf compatibility_level=3.6
+
     # issue #1: postconf -e virtual_alias_domains="$virtualDomains"
     postconf -e relay_domains="$virtualDomains"
     postconf -e virtual_alias_maps="lmdb:/etc/postfix/virtual"
 
+    # initial blacklist
+    echo ""  > /etc/postfix/blacklist
+    # initial blacklist database
+    postmap lmdb:/etc/postfix/blacklist
+
     # initial user database
-    postmap /etc/postfix/virtual
+    postmap lmdb:/etc/postfix/virtual
 
 
     #
@@ -191,7 +199,7 @@ function start_postfix {
     if [ "$SMF_RELAYAUTH" != "" ]
     then
         echo "$SMF_RELAYHOST   $SMF_RELAYAUTH" > /etc/postfix/sasl_passwd
-        postmap /etc/postfix/sasl_passwd
+        postmap lmdb:/etc/postfix/sasl_passwd
         postconf -e smtp_use_tls=yes
         postconf -e smtp_sasl_auth_enable=yes
         postconf -e smtp_sasl_security_options=

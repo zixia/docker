@@ -46,12 +46,17 @@ COPY install/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 COPY install/opendkim.conf /etc/opendkim/opendkim.conf
 COPY install/sender_header_filter.pcre /etc/postfix/sender_header_filter.pcre
 COPY install/sasl_smtpd.conf /etc/sasl2/smtpd.conf
+COPY install/postsrsd.conf /etc/postsrsd/postsrsd.conf
 RUN cat /dev/null > /etc/postfix/aliases && newaliases \
     && echo simple-mail-forwarder.com > /etc/hostname \
     && mkdir -p /run/opendkim && chown opendkim:opendkim /run/opendkim \
-    && echo test | saslpasswd2 -p -c -u "test.com" "test" \
-    && chown postfix /etc/sasl2/sasldb2 \
-    && saslpasswd2 -d test@test.com
+    && echo test | saslpasswd2 -f /etc/sasl2/sasldb2 -p test@test.com \
+    && saslpasswd2 -f /etc/sasl2/sasldb2 -d test@test.com \
+    && chown root:postfix /etc/sasl2/sasldb2 \
+    && chmod 644 /etc/sasl2/sasldb2 \
+    && chown root:postsrsd /etc/postsrsd/postsrsd.conf \
+    && chmod 644 /etc/postsrsd/postsrsd.conf \
+    && ln /etc/sasl2/sasldb2 /etc/postfix/
 
 ## Copy App
 

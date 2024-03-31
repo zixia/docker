@@ -14,11 +14,11 @@
     [[ "$SMF_DOMAIN" =~ [a-zA-Z0-9_-]+\.[a-zA-Z]{2,}$ ]]
 }
 
-@test "virtual maping source is set" {
+@test "virtual mapping source is set" {
     [ -f /etc/postfix/virtual ]
 }
 
-@test "virtual maping data is set" {
+@test "virtual mapping data is set" {
     while read -r addrFrom addrTo; do
     	[ ! "$addrFrom" -o ! "$addrTo" ] && continue
 
@@ -36,8 +36,8 @@
     done < /etc/postfix/virtual
 }
 
-@test "virtual maping db is set" {
-    [ -f /etc/postfix/virtual.db ]
+@test "virtual mapping is set" {
+    [ -f /etc/postfix/virtual.lmdb ]
 }
 
 @test "system hostname FQDN resolvable" {
@@ -93,6 +93,9 @@
     [[ $output =~ AUTH ]]
     [[ $output =~ PLAIN ]]
     [[ $output =~ LOGIN ]]
+    [[ $output =~ CRAM-MD5 ]]
+    [[ $output =~ DIGEST-MD5 ]]
+    [[ $output =~ NTLM ]]
 }
 
 @test "ESMTP STARTTLS connect ok" {
@@ -112,7 +115,7 @@
     # # perl -MMIME::Base64 -e 'print encode_base64("testi\@testo.com\0testi\@testo.com\0test");'
     # dGVzdGlAdGVzdG8uY29tAHRlc3RpQHRlc3RvLmNvbQB0ZXN0
     #
-    output=$(nc 127.0.0.1:25 \
+    output=$(nc 127.0.0.1 25 \
         <<< 'EHLO test.com' \
         <<< 'AUTH PLAIN dGVzdGlAdGVzdG8uY29tAHRlc3RpQHRlc3RvLmNvbQB0ZXN0' \
         )
@@ -166,7 +169,7 @@
     saslpasswd2 -d testi@testo.com
 
     # Expect login to fail
-    output=$(nc 127.0.0.1:25 \
+    output=$(nc 127.0.0.1 25 \
         <<< 'EHLO test.com' \
         <<< 'AUTH PLAIN dGVzdGlAdGVzdG8uY29tAHRlc3RpQHRlc3RvLmNvbQB0ZXN0' \
         )

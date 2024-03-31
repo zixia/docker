@@ -37,5 +37,5 @@ if [ ! -f "smtp.ec.cert" ]; then
         -out smtp.ec.cert
 fi
 
-chown -R root.postfix /etc/postfix/cert/
+chown -R root:postfix /etc/postfix/cert/
 chmod -R 750 /etc/postfix/cert/
