@@ -9,8 +9,10 @@
 # service type  private unpriv  chroot  wakeup  maxproc command + args
 #               (yes)   (yes)   (no)    (never) (100)
 # ==========================================================================
-smtp      inet  n       -       n       -       -       smtpd
-2525      inet  n       -       n       -       -       smtpd
+smtp      inet  n       -       n       -       -       smtpd 
+  -o content_filter=spamfilter
+2525      inet  n       -       n       -       -       smtpd 
+  -o content_filter=spamfilter
 #smtp      inet  n       -       n       -       1       postscreen
 #smtpd     pass  -       -       n       -       -       smtpd
 #dnsblog   unix  -       -       n       -       0       dnsblog
@@ -74,6 +76,9 @@ scache    unix  -       -       n       -       1       scache
 # and other message envelope options.
 # ====================================================================
 #
+spamfilter    unix  -       n       n       -       -       pipe  
+  flags=Rq user=spamd argv=/app/spamfilter.sh -oi -f ${sender} ${recipient}
+
 # maildrop. See the Postfix MAILDROP_README file for details.
 # Also specify in main.cf: maildrop_destination_recipient_limit=1
 #
@@ -130,3 +135,4 @@ scache    unix  -       -       n       -       1       scache
 #mailman   unix  -       n       n       -       -       pipe
 #  flags=FR user=list argv=/usr/lib/mailman/bin/postfix-to-mailman.py
 #  ${nexthop} ${user}
+postlog   unix-dgram n  -       n       -       1       postlogd

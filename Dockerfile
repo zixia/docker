@@ -26,13 +26,16 @@ RUN apk add --update --no-cache \
         postfix-pcre \
         syslog-ng \
         tzdata \
-    \
+        spamassassin-client \ 
     && curl -s -o "/tmp/v${BATS_VERSION}.tar.gz" -L \
         "https://github.com/bats-core/bats-core/archive/v${BATS_VERSION}.tar.gz" \
     && tar -xzf "/tmp/v${BATS_VERSION}.tar.gz" -C /tmp/ \
     && bash "/tmp/bats-core-${BATS_VERSION}/install.sh" /usr/local \
     \
     && rm -rf /tmp/*
+
+# Create spamd user and group 
+RUN addgroup -S spamd && adduser -S spamd -G spamd
 
 ## Install s6 process manager with the current platform (arm/x86)
 COPY script/install-s6-overlay.sh /app/
@@ -47,6 +50,8 @@ COPY install/opendkim.conf /etc/opendkim/opendkim.conf
 COPY install/sender_header_filter.pcre /etc/postfix/sender_header_filter.pcre
 COPY install/sasl_smtpd.conf /etc/sasl2/smtpd.conf
 COPY install/postsrsd.conf /etc/postsrsd/postsrsd.conf
+COPY install/postfix-cron /etc/cron.d/postfix-cron
+
 RUN cat /dev/null > /etc/postfix/aliases && newaliases \
     && echo simple-mail-forwarder.com > /etc/hostname \
     && mkdir -p /run/opendkim && chown opendkim:opendkim /run/opendkim \
@@ -56,7 +61,10 @@ RUN cat /dev/null > /etc/postfix/aliases && newaliases \
     && chmod 644 /etc/sasl2/sasldb2 \
     && chown root:postsrsd /etc/postsrsd/postsrsd.conf \
     && chmod 644 /etc/postsrsd/postsrsd.conf \
-    && ln /etc/sasl2/sasldb2 /etc/postfix/
+    && ln /etc/sasl2/sasldb2 /etc/postfix/ \
+    && chmod 0644 /etc/cron.d/postfix-cron \
+    && crontab /etc/cron.d/postfix-cron \
+    && touch /var/log/cron.log
 
 ## Copy App
 
@@ -67,6 +75,9 @@ RUN bash -n /app/init-openssl.sh && chmod +x /app/init-openssl.sh
 
 COPY install/init-postsrsd.sh /app/init-postsrsd.sh
 RUN bash -n /app/init-postsrsd.sh && chmod +x /app/init-postsrsd.sh
+
+COPY install/spamfilter.sh /app/spamfilter.sh
+RUN bash -n /app/spamfilter.sh && chmod +x /app/spamfilter.sh
 
 COPY install/postfix.sh /etc/services.d/postfix/run
 RUN bash -n /etc/services.d/postfix/run && chmod +x /etc/services.d/postfix/run

@@ -225,6 +225,9 @@ function start_postfix {
         mkdir -p "$(dirname "$SMF_POSTFIXLOG")"
         postconf maillog_file="$SMF_POSTFIXLOG"
         postfix upgrade-configuration
+        # Start cron in background for log rotation
+        echo "Postfix automatically rotate logs every day at 1 am"
+        /usr/sbin/crond &
       fi
     fi
 
