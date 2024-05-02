@@ -11,8 +11,6 @@
 # ==========================================================================
 smtp      inet  n       -       n       -       -       smtpd 
   -o content_filter=spamfilter
-2525      inet  n       -       n       -       -       smtpd 
-  -o content_filter=spamfilter
 #smtp      inet  n       -       n       -       1       postscreen
 #smtpd     pass  -       -       n       -       -       smtpd
 #dnsblog   unix  -       -       n       -       0       dnsblog
